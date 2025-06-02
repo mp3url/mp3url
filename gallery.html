@@ -1,0 +1,1403 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gallery Manager</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Tailwind Configuration -->
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              tidal: {
+                black: '#000000',
+                dark: '#0F0F0F',
+                gray: {
+                  100: '#F5F5F5',
+                  200: '#E5E5E5',
+                  300: '#D4D4D4',
+                  400: '#A3A3A3',
+                  500: '#737373',
+                  600: '#525252',
+                  700: '#404040',
+                  800: '#262626',
+                  900: '#171717'
+                },
+                blue: '#0EA5E9',
+                white: '#FFFFFF'
+              }
+            },
+            fontFamily: {
+              tidal: ['Inter', 'system-ui', 'sans-serif']
+            }
+          }
+        }
+      }
+    </script>
+
+    <!-- Gallery Data Island (M3U Format) -->
+    <script type="text/plain" id="gallery-data">
+      #EXTM3U
+      #EXTINF:1,Mountain Sunrise
+      #EXTGENRE:Nature
+      #EXTALBUM:John Doe
+      #EXTVLCOPT:description=Beautiful sunrise over snow-capped mountains
+      #EXTVLCOPT:tags=landscape,mountains,sunrise
+      #EXTVLCOPT:date=2024-01-15
+      #EXTVLCOPT:size=2.4 MB
+      #EXTVLCOPT:dimensions=1920x1080
+      #EXTVLCOPT:id=1
+      https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=300&fit=crop
+
+      #EXTINF:2,City Lights
+      #EXTGENRE:Urban
+      #EXTALBUM:Jane Smith
+      #EXTVLCOPT:description=Vibrant city skyline at night
+      #EXTVLCOPT:tags=city,night,lights,skyline
+      #EXTVLCOPT:date=2024-01-10
+      #EXTVLCOPT:size=3.1 MB
+      #EXTVLCOPT:dimensions=1080x1920
+      #EXTVLCOPT:id=2
+      https://images.unsplash.com/photo-1519501025264-65ba15a82390?w=400&h=600&fit=crop
+
+      #EXTINF:3,Ocean Waves
+      #EXTGENRE:Nature
+      #EXTALBUM:Mike Johnson
+      #EXTVLCOPT:description=Peaceful ocean waves on a sandy beach
+      #EXTVLCOPT:tags=ocean,waves,beach,peaceful
+      #EXTVLCOPT:date=2024-01-08
+      #EXTVLCOPT:size=1.8 MB
+      #EXTVLCOPT:dimensions=1920x1080
+      #EXTVLCOPT:id=3
+      https://images.unsplash.com/photo-1505142468610-359e7d316be0?w=400&h=300&fit=crop
+
+      #EXTINF:4,Forest Path
+      #EXTGENRE:Nature
+      #EXTALBUM:Sarah Wilson
+      #EXTVLCOPT:description=Mysterious path through a dense forest
+      #EXTVLCOPT:tags=forest,path,trees,mysterious
+      #EXTVLCOPT:date=2024-01-05
+      #EXTVLCOPT:size=2.7 MB
+      #EXTVLCOPT:dimensions=1080x1350
+      #EXTVLCOPT:id=4
+      https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&h=500&fit=crop
+
+      #EXTINF:5,Abstract Art
+      #EXTGENRE:Art
+      #EXTALBUM:Alex Chen
+      #EXTVLCOPT:description=Colorful abstract digital artwork
+      #EXTVLCOPT:tags=abstract,colorful,digital,art
+      #EXTVLCOPT:date=2024-01-03
+      #EXTVLCOPT:size=1.5 MB
+      #EXTVLCOPT:dimensions=1080x1080
+      #EXTVLCOPT:id=5
+      https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=400&h=400&fit=crop
+
+      #EXTINF:6,Vintage Car
+      #EXTGENRE:Automotive
+      #EXTALBUM:David Brown
+      #EXTVLCOPT:description=Classic vintage car in perfect condition
+      #EXTVLCOPT:tags=vintage,car,classic,automobile
+      #EXTVLCOPT:date=2024-01-01
+      #EXTVLCOPT:size=2.9 MB
+      #EXTVLCOPT:dimensions=1920x1080
+      #EXTVLCOPT:id=6
+      https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=400&h=300&fit=crop
+
+      #EXTINF:7,Coffee Culture
+      #EXTGENRE:Food
+      #EXTALBUM:Emma Davis
+      #EXTVLCOPT:description=Artisanal coffee with latte art
+      #EXTVLCOPT:tags=coffee,latte,art,cafe
+      #EXTVLCOPT:date=2023-12-28
+      #EXTVLCOPT:size=1.2 MB
+      #EXTVLCOPT:dimensions=1080x1350
+      #EXTVLCOPT:id=7
+      https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400&h=500&fit=crop
+
+      #EXTINF:8,Architecture
+      #EXTGENRE:Architecture
+      #EXTALBUM:Tom Anderson
+      #EXTVLCOPT:description=Modern architectural masterpiece
+      #EXTVLCOPT:tags=architecture,modern,building,design
+      #EXTVLCOPT:date=2023-12-25
+      #EXTVLCOPT:size=3.5 MB
+      #EXTVLCOPT:dimensions=1080x1920
+      #EXTVLCOPT:id=8
+      https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=400&h=600&fit=crop
+    </script>
+
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+      body {
+        font-family: 'Inter', system-ui, sans-serif;
+        background: #000000;
+      }
+
+      .scrollbar-hide {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+      .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+      }
+
+      .tidal-gradient {
+        background: linear-gradient(
+          135deg,
+          #000000 0%,
+          #0f0f0f 50%,
+          #171717 100%
+        );
+      }
+
+      .image-placeholder {
+        background: linear-gradient(135deg, #262626 0%, #404040 100%);
+      }
+
+      .hover-lift {
+        transition: all 0.3s ease;
+      }
+      .hover-lift:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+      }
+
+      .text-shadow {
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+      }
+
+      .image-overlay {
+        background: linear-gradient(
+          to top,
+          rgba(0, 0, 0, 0.8) 0%,
+          rgba(0, 0, 0, 0.4) 50%,
+          transparent 100%
+        );
+      }
+
+      .modal-backdrop {
+        backdrop-filter: blur(20px);
+        background: rgba(0, 0, 0, 0.9);
+      }
+
+      .grid-masonry {
+        column-count: 3;
+        column-gap: 1rem;
+      }
+
+      @media (max-width: 768px) {
+        .grid-masonry {
+          column-count: 2;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .grid-masonry {
+          column-count: 1;
+        }
+      }
+
+      .masonry-item {
+        break-inside: avoid;
+        margin-bottom: 1rem;
+      }
+    </style>
+  </head>
+  <body class="tidal-gradient text-tidal-white min-h-screen">
+    <div id="app"></div>
+
+    <script type="module">
+      import { h, render } from 'https://cdn.skypack.dev/preact@10.19.3'
+      import { html } from 'https://cdn.skypack.dev/htm@3.1.1/preact'
+      import {
+        useState,
+        useEffect,
+        useRef
+      } from 'https://cdn.skypack.dev/preact@10.19.3/hooks'
+
+      // Load data from M3U data island or external URL
+      const loadGalleryData = async () => {
+        try {
+          // Check for uri parameter in query string
+          const urlParams = new URLSearchParams(window.location.search)
+          const externalUri = urlParams.get('uri')
+
+          let m3uContent = ''
+
+          if (externalUri) {
+            // Fetch M3U from external URL
+            console.log('Loading M3U from external URL:', externalUri)
+            try {
+              const response = await fetch(externalUri)
+              if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`)
+              }
+              m3uContent = await response.text()
+            } catch (fetchError) {
+              console.error('Failed to fetch external M3U:', fetchError)
+              // Fall back to local data island
+              const dataElement = document.getElementById('gallery-data')
+              if (!dataElement) {
+                throw new Error(
+                  'Gallery data island not found and external fetch failed'
+                )
+              }
+              m3uContent = dataElement.textContent.trim()
+            }
+          } else {
+            // Use local data island
+            const dataElement = document.getElementById('gallery-data')
+            if (!dataElement) {
+              throw new Error('Gallery data island not found')
+            }
+            m3uContent = dataElement.textContent.trim()
+          }
+
+          // Import mp3url library dynamically
+          const { parse } = await import(
+            'https://cdn.skypack.dev/mp3url@latest'
+          )
+
+          // Parse M3U content
+          const playlist = parse(m3uContent)
+
+          // Convert M3U tracks to gallery image format
+          const images = playlist.tracks.map(track => {
+            // Extract metadata from directives
+            const getDirectiveValue = key => {
+              const directive = track.directives.find(d => d.key === key)
+              return directive ? directive.value : null
+            }
+
+            // Get genre from track-level or use EXTGENRE
+            let category = 'Nature'
+            const genreDirective = track.directives.find(
+              d => d.type === 'EXTGENRE'
+            )
+            if (genreDirective) {
+              category = genreDirective.raw
+                ? genreDirective.raw.replace('#EXTGENRE:', '')
+                : 'Nature'
+            }
+
+            // Get photographer from EXTALBUM
+            let photographer = 'Unknown'
+            const albumDirective = track.directives.find(
+              d => d.type === 'EXTALBUM'
+            )
+            if (albumDirective) {
+              photographer = albumDirective.raw
+                ? albumDirective.raw.replace('#EXTALBUM:', '')
+                : 'Unknown'
+            }
+
+            return {
+              id: parseInt(getDirectiveValue('id')) || track.duration,
+              title: track.title || 'Untitled',
+              description:
+                getDirectiveValue('description') || 'No description provided',
+              category: category,
+              tags: getDirectiveValue('tags')
+                ? getDirectiveValue('tags').split(',')
+                : [],
+              url: (() => {
+                const originalUrl = track.url
+                const transformedUrl = track.url
+                  .replace(/w=\d+/g, 'w=1200')
+                  .replace(/h=\d+/g, 'h=800')
+                  .replace(/&fit=crop/g, '&fit=crop&q=80')
+                console.log('URL transformation:', {
+                  original: originalUrl,
+                  transformed: transformedUrl,
+                  title: track.title
+                })
+                return transformedUrl
+              })(),
+              thumbnail: track.url,
+              photographer: photographer,
+              date:
+                getDirectiveValue('date') ||
+                new Date().toISOString().split('T')[0],
+              size: getDirectiveValue('size') || '2.0 MB',
+              dimensions: getDirectiveValue('dimensions') || '1920x1080'
+            }
+          })
+
+          return { images }
+        } catch (error) {
+          console.error('Failed to load gallery data:', error)
+          // Fallback to empty data structure
+          return {
+            images: []
+          }
+        }
+      }
+
+      // Initialize gallery data (now async)
+      let galleryData = { images: [] }
+      let dataSource = 'local' // Track data source
+
+      // Load data asynchronously
+      loadGalleryData().then(data => {
+        galleryData = data
+        // Check if we loaded from external source
+        const urlParams = new URLSearchParams(window.location.search)
+        dataSource = urlParams.get('uri') ? 'external' : 'local'
+        // Re-render the app with loaded data
+        render(html`<${App} />`, document.getElementById('app'))
+      })
+
+      // App configuration
+      const appConfig = {
+        defaultViewMode: 'grid',
+        itemsPerPage: 20,
+        enableFavorites: true,
+        enableSearch: true,
+        enableFilters: true
+      }
+
+      // Available categories
+      const availableCategories = [
+        'Nature',
+        'Urban',
+        'Art',
+        'Architecture',
+        'Food',
+        'Automotive',
+        'Portrait',
+        'Abstract'
+      ]
+
+      // Icons
+      const SearchIcon = () => html`
+        <svg
+          class="w-5 h-5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+          />
+        </svg>
+      `
+
+      const GridIcon = () => html`
+        <svg
+          class="w-5 h-5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
+          />
+        </svg>
+      `
+
+      const ListIcon = () => html`
+        <svg
+          class="w-5 h-5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M4 6h16M4 10h16M4 14h16M4 18h16"
+          />
+        </svg>
+      `
+
+      const HeartIcon = ({ filled = false }) => html`
+        <svg
+          class="w-5 h-5"
+          fill=${filled ? 'currentColor' : 'none'}
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+          />
+        </svg>
+      `
+
+      const DownloadIcon = () => html`
+        <svg
+          class="w-5 h-5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+          />
+        </svg>
+      `
+
+      const ShareIcon = () => html`
+        <svg
+          class="w-5 h-5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"
+          />
+        </svg>
+      `
+
+      const CloseIcon = () => html`
+        <svg
+          class="w-6 h-6"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M6 18L18 6M6 6l12 12"
+          />
+        </svg>
+      `
+
+      const PlusIcon = () => html`
+        <svg
+          class="w-5 h-5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+          />
+        </svg>
+      `
+
+      // Image Card Component
+      const ImageCard = ({
+        image,
+        onClick,
+        onToggleFavorite,
+        isFavorite,
+        viewMode
+      }) => {
+        const [imageLoaded, setImageLoaded] = useState(false)
+
+        const handleImageClick = () => {
+          console.log('Image clicked:', image.title, image)
+          onClick(image)
+        }
+
+        if (viewMode === 'list') {
+          return html`
+            <div
+              class="flex items-center p-4 hover:bg-tidal-gray-900/50 transition-colors group rounded-lg cursor-pointer"
+              onClick=${handleImageClick}
+            >
+              <div
+                class="w-16 h-16 image-placeholder rounded-lg mr-4 overflow-hidden"
+              >
+                <img
+                  src=${image.thumbnail}
+                  alt=${image.title}
+                  class="w-full h-full object-cover"
+                  onLoad=${() => setImageLoaded(true)}
+                />
+              </div>
+              <div class="flex-1 min-w-0">
+                <h3 class="font-medium text-white truncate">${image.title}</h3>
+                <p class="text-sm text-tidal-gray-400 truncate">
+                  ${image.description}
+                </p>
+                <div class="flex items-center space-x-2 mt-1">
+                  <span class="text-xs text-tidal-gray-500"
+                    >${image.photographer}</span
+                  >
+                  <span class="text-xs text-tidal-gray-500">•</span>
+                  <span class="text-xs text-tidal-gray-500"
+                    >${image.dimensions}</span
+                  >
+                </div>
+              </div>
+              <div
+                class="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity"
+              >
+                <button
+                  onClick=${e => {
+                    e.stopPropagation()
+                    onToggleFavorite(image.id)
+                  }}
+                  class="p-2 hover:bg-tidal-gray-800 rounded-full transition-colors ${isFavorite
+                    ? 'text-red-500'
+                    : 'text-tidal-gray-400'}"
+                >
+                  <${HeartIcon} filled=${isFavorite} />
+                </button>
+                <button
+                  onClick=${e => {
+                    e.stopPropagation()
+                    handleImageClick()
+                  }}
+                  class="px-3 py-1 bg-tidal-blue hover:bg-blue-600 text-white rounded-md transition-colors text-sm"
+                >
+                  View
+                </button>
+              </div>
+            </div>
+          `
+        }
+
+        return html`
+          <div class="masonry-item">
+            <div
+              class="relative group cursor-pointer hover-lift rounded-lg overflow-hidden bg-tidal-gray-900"
+              onClick=${handleImageClick}
+            >
+              <div class="relative">
+                <img
+                  src=${image.thumbnail}
+                  alt=${image.title}
+                  class="w-full h-auto object-cover"
+                  onLoad=${() => setImageLoaded(true)}
+                />
+                <div
+                  class="absolute inset-0 image-overlay opacity-0 group-hover:opacity-100 transition-opacity"
+                >
+                  <div class="absolute bottom-0 left-0 right-0 p-4">
+                    <h3 class="font-semibold text-white text-shadow mb-1">
+                      ${image.title}
+                    </h3>
+                    <p class="text-sm text-tidal-gray-200 text-shadow">
+                      ${image.photographer}
+                    </p>
+                  </div>
+                </div>
+                <div
+                  class="absolute top-3 right-3 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                >
+                  <button
+                    onClick=${e => {
+                      e.stopPropagation()
+                      console.log('Favorite button clicked for:', image.title)
+                      onToggleFavorite(image.id)
+                    }}
+                    class="p-2 bg-black/50 hover:bg-black/70 rounded-full transition-colors ${isFavorite
+                      ? 'text-red-500'
+                      : 'text-white'}"
+                  >
+                    <${HeartIcon} filled=${isFavorite} />
+                  </button>
+                </div>
+              </div>
+              <div class="p-4">
+                <div class="flex items-center justify-between">
+                  <span
+                    class="text-xs px-2 py-1 bg-tidal-gray-800 text-tidal-gray-300 rounded-full"
+                    >${image.category}</span
+                  >
+                  <span class="text-xs text-tidal-gray-500">${image.size}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        `
+      }
+
+      // Image Modal Component
+      const ImageModal = ({
+        image,
+        isOpen,
+        onClose,
+        onToggleFavorite,
+        isFavorite
+      }) => {
+        const [showInfo, setShowInfo] = useState(false)
+        const [imageLoaded, setImageLoaded] = useState(false)
+        const [imageError, setImageError] = useState(false)
+        const [currentImageUrl, setCurrentImageUrl] = useState('')
+
+        // Keyboard event handler
+        useEffect(() => {
+          if (!isOpen) return
+
+          const handleKeyDown = e => {
+            if (e.key === 'Escape') {
+              onClose()
+            } else if (e.key === 'i' || e.key === 'I') {
+              setShowInfo(!showInfo)
+            }
+          }
+
+          document.addEventListener('keydown', handleKeyDown)
+          return () => document.removeEventListener('keydown', handleKeyDown)
+        }, [isOpen, onClose, showInfo])
+
+        // Reset state when modal opens
+        useEffect(() => {
+          if (isOpen && image) {
+            setImageLoaded(false)
+            setImageError(false)
+            setShowInfo(false)
+            setCurrentImageUrl(image.url)
+            console.log('Modal opened with image URL:', image.url)
+          }
+        }, [isOpen, image])
+
+        // Handle image load error - fallback to thumbnail
+        const handleImageError = () => {
+          console.log('Image failed to load:', currentImageUrl)
+          if (currentImageUrl === image.url && image.thumbnail !== image.url) {
+            console.log('Falling back to thumbnail:', image.thumbnail)
+            setCurrentImageUrl(image.thumbnail)
+            setImageError(false)
+          } else {
+            console.log('Both URLs failed, showing error state')
+            setImageError(true)
+            setImageLoaded(true) // Hide spinner
+          }
+        }
+
+        if (!isOpen || !image) return null
+
+        return html`
+          <div
+            class="fixed inset-0 bg-black z-50 flex items-center justify-center"
+            onClick=${onClose}
+          >
+            <!-- Close button -->
+            <button
+              onClick=${onClose}
+              class="absolute top-4 right-4 z-20 p-3 bg-black/50 hover:bg-black/70 rounded-full transition-all duration-200 text-white hover:scale-110"
+              title="Close (ESC)"
+            >
+              <${CloseIcon} />
+            </button>
+
+            <!-- Info toggle button -->
+            <button
+              onClick=${e => {
+                e.stopPropagation()
+                setShowInfo(!showInfo)
+              }}
+              class="absolute top-4 left-4 z-20 p-3 bg-black/50 hover:bg-black/70 rounded-full transition-all duration-200 text-white hover:scale-110"
+              title="Toggle Info (I)"
+            >
+              <svg
+                class="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+            </button>
+
+            <!-- Loading indicator -->
+            ${!imageLoaded && !imageError
+              ? html`
+                  <div
+                    class="absolute inset-0 flex items-center justify-center"
+                  >
+                    <div class="text-center">
+                      <div
+                        class="w-12 h-12 border-4 border-tidal-blue border-t-transparent rounded-full animate-spin mx-auto mb-4"
+                      ></div>
+                      <p class="text-tidal-gray-400 text-sm">
+                        Loading image...
+                      </p>
+                    </div>
+                  </div>
+                `
+              : ''}
+
+            <!-- Error state -->
+            ${imageError
+              ? html`
+                  <div
+                    class="absolute inset-0 flex items-center justify-center"
+                  >
+                    <div class="text-center text-tidal-gray-400">
+                      <div
+                        class="w-16 h-16 mx-auto mb-4 flex items-center justify-center bg-tidal-gray-800 rounded-lg"
+                      >
+                        <svg
+                          class="w-8 h-8"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"
+                          />
+                        </svg>
+                      </div>
+                      <p class="text-lg mb-2">Failed to load image</p>
+                      <p class="text-sm">The image could not be displayed</p>
+                    </div>
+                  </div>
+                `
+              : ''}
+
+            <!-- Main image -->
+            ${!imageError
+              ? html`
+                  <img
+                    src=${currentImageUrl}
+                    alt=${image.title}
+                    class="max-w-full max-h-full object-contain cursor-pointer transition-opacity duration-300 ${imageLoaded
+                      ? 'opacity-100'
+                      : 'opacity-0'}"
+                    onClick=${e => e.stopPropagation()}
+                    onLoad=${() => {
+                      console.log('Image loaded successfully:', currentImageUrl)
+                      setImageLoaded(true)
+                    }}
+                    onError=${handleImageError}
+                    style="user-select: none; -webkit-user-select: none;"
+                  />
+                `
+              : ''}
+
+            <!-- Info panel -->
+            <div
+              class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/70 to-transparent p-6 transform transition-transform duration-300 ${showInfo
+                ? 'translate-y-0'
+                : 'translate-y-full'}"
+              onClick=${e => e.stopPropagation()}
+            >
+              <div class="max-w-4xl mx-auto">
+                <div class="flex items-start justify-between mb-4">
+                  <div class="flex-1 mr-6">
+                    <h2 class="text-2xl font-bold text-white mb-2">
+                      ${image.title}
+                    </h2>
+                    <p class="text-tidal-gray-300 mb-4 leading-relaxed">
+                      ${image.description}
+                    </p>
+
+                    <div
+                      class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm mb-4"
+                    >
+                      <div>
+                        <span class="text-tidal-gray-400 block"
+                          >Photographer</span
+                        >
+                        <p class="text-white font-medium">
+                          ${image.photographer}
+                        </p>
+                      </div>
+                      <div>
+                        <span class="text-tidal-gray-400 block">Date</span>
+                        <p class="text-white font-medium">${image.date}</p>
+                      </div>
+                      <div>
+                        <span class="text-tidal-gray-400 block"
+                          >Dimensions</span
+                        >
+                        <p class="text-white font-medium">
+                          ${image.dimensions}
+                        </p>
+                      </div>
+                      <div>
+                        <span class="text-tidal-gray-400 block">Size</span>
+                        <p class="text-white font-medium">${image.size}</p>
+                      </div>
+                    </div>
+
+                    <!-- Tags -->
+                    <div class="mb-4">
+                      <span class="text-tidal-gray-400 text-sm block mb-2"
+                        >Tags</span
+                      >
+                      <div class="flex flex-wrap gap-2">
+                        ${image.tags.map(
+                          tag => html`
+                            <span
+                              class="px-3 py-1 bg-white/10 text-white rounded-full text-xs backdrop-blur-sm"
+                            >
+                              ${tag}
+                            </span>
+                          `
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Action buttons -->
+                  <div class="flex flex-col space-y-3">
+                    <button
+                      onClick=${() => onToggleFavorite(image.id)}
+                      class="flex items-center space-x-2 px-4 py-2 ${isFavorite
+                        ? 'bg-red-500 hover:bg-red-600'
+                        : 'bg-white/10 hover:bg-white/20'} backdrop-blur-sm rounded-lg transition-all duration-200 text-white"
+                    >
+                      <${HeartIcon} filled=${isFavorite} />
+                      <span class="hidden sm:inline"
+                        >${isFavorite ? 'Favorited' : 'Favorite'}</span
+                      >
+                    </button>
+
+                    <button
+                      onClick=${() => {
+                        const link = document.createElement('a')
+                        link.href = image.url
+                        link.download = `${image.title}.jpg`
+                        link.click()
+                      }}
+                      class="flex items-center space-x-2 px-4 py-2 bg-tidal-blue/80 hover:bg-tidal-blue backdrop-blur-sm rounded-lg transition-all duration-200 text-white"
+                    >
+                      <${DownloadIcon} />
+                      <span class="hidden sm:inline">Download</span>
+                    </button>
+
+                    <button
+                      onClick=${() => {
+                        if (navigator.share) {
+                          navigator.share({
+                            title: image.title,
+                            text: image.description,
+                            url: image.url
+                          })
+                        } else {
+                          navigator.clipboard.writeText(image.url)
+                          // Could add a toast notification here
+                        }
+                      }}
+                      class="flex items-center space-x-2 px-4 py-2 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-lg transition-all duration-200 text-white"
+                    >
+                      <${ShareIcon} />
+                      <span class="hidden sm:inline">Share</span>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Keyboard shortcuts hint -->
+                <div class="text-xs text-tidal-gray-400 text-center">
+                  Press
+                  <kbd class="px-1 py-0.5 bg-white/10 rounded">ESC</kbd> to
+                  close • Press
+                  <kbd class="px-1 py-0.5 bg-white/10 rounded">I</kbd> to toggle
+                  info
+                </div>
+              </div>
+            </div>
+
+            <!-- Info indicator when panel is hidden -->
+            ${!showInfo
+              ? html`
+                  <div
+                    class="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-10"
+                  >
+                    <div
+                      class="flex items-center space-x-2 px-3 py-2 bg-black/50 rounded-full text-white text-sm backdrop-blur-sm"
+                    >
+                      <svg
+                        class="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                      </svg>
+                      <span>Press I for info</span>
+                    </div>
+                  </div>
+                `
+              : ''}
+          </div>
+        `
+      }
+
+      // Add Image Modal
+      const AddImageModal = ({ isOpen, onClose, onAdd }) => {
+        const [title, setTitle] = useState('')
+        const [description, setDescription] = useState('')
+        const [category, setCategory] = useState(
+          availableCategories[0] || 'Nature'
+        )
+        const [photographer, setPhotographer] = useState('')
+        const [url, setUrl] = useState('')
+        const [tags, setTags] = useState('')
+
+        const handleSubmit = e => {
+          e.preventDefault()
+          if (title && url && photographer) {
+            onAdd({
+              id: Date.now(),
+              title,
+              description: description || 'No description provided',
+              category,
+              photographer,
+              url,
+              thumbnail: url,
+              tags: tags
+                .split(',')
+                .map(tag => tag.trim())
+                .filter(tag => tag),
+              date: new Date().toISOString().split('T')[0],
+              size: '2.1 MB',
+              dimensions: '1920x1080'
+            })
+            setTitle('')
+            setDescription('')
+            setCategory(availableCategories[0] || 'Nature')
+            setPhotographer('')
+            setUrl('')
+            setTags('')
+            onClose()
+          }
+        }
+
+        if (!isOpen) return null
+
+        return html`
+          <div
+            class="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50"
+          >
+            <div
+              class="bg-tidal-gray-900 rounded-lg p-6 w-full max-w-md border border-tidal-gray-800"
+            >
+              <h2 class="text-xl font-semibold mb-6 text-white">
+                Add New Image
+              </h2>
+              <form onSubmit=${handleSubmit} class="space-y-4">
+                <div>
+                  <label
+                    class="block text-sm font-medium mb-2 text-tidal-gray-300"
+                    >Title</label
+                  >
+                  <input
+                    type="text"
+                    value=${title}
+                    onInput=${e => setTitle(e.target.value)}
+                    class="w-full px-3 py-2 bg-tidal-gray-800 border border-tidal-gray-700 rounded-md focus:ring-2 focus:ring-tidal-blue focus:border-transparent text-white placeholder-tidal-gray-400"
+                    placeholder="Enter image title"
+                    required
+                  />
+                </div>
+                <div>
+                  <label
+                    class="block text-sm font-medium mb-2 text-tidal-gray-300"
+                    >Image URL</label
+                  >
+                  <input
+                    type="url"
+                    value=${url}
+                    onInput=${e => setUrl(e.target.value)}
+                    class="w-full px-3 py-2 bg-tidal-gray-800 border border-tidal-gray-700 rounded-md focus:ring-2 focus:ring-tidal-blue focus:border-transparent text-white placeholder-tidal-gray-400"
+                    placeholder="https://example.com/image.jpg"
+                    required
+                  />
+                </div>
+                <div>
+                  <label
+                    class="block text-sm font-medium mb-2 text-tidal-gray-300"
+                    >Description</label
+                  >
+                  <textarea
+                    value=${description}
+                    onInput=${e => setDescription(e.target.value)}
+                    class="w-full px-3 py-2 bg-tidal-gray-800 border border-tidal-gray-700 rounded-md focus:ring-2 focus:ring-tidal-blue focus:border-transparent text-white placeholder-tidal-gray-400"
+                    placeholder="Enter description"
+                    rows="3"
+                  />
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                  <div>
+                    <label
+                      class="block text-sm font-medium mb-2 text-tidal-gray-300"
+                      >Category</label
+                    >
+                    <select
+                      value=${category}
+                      onChange=${e => setCategory(e.target.value)}
+                      class="w-full px-3 py-2 bg-tidal-gray-800 border border-tidal-gray-700 rounded-md focus:ring-2 focus:ring-tidal-blue focus:border-transparent text-white"
+                    >
+                      ${availableCategories.map(
+                        cat => html`<option value=${cat}>${cat}</option>`
+                      )}
+                    </select>
+                  </div>
+                  <div>
+                    <label
+                      class="block text-sm font-medium mb-2 text-tidal-gray-300"
+                      >Photographer</label
+                    >
+                    <input
+                      type="text"
+                      value=${photographer}
+                      onInput=${e => setPhotographer(e.target.value)}
+                      class="w-full px-3 py-2 bg-tidal-gray-800 border border-tidal-gray-700 rounded-md focus:ring-2 focus:ring-tidal-blue focus:border-transparent text-white placeholder-tidal-gray-400"
+                      placeholder="Photographer name"
+                      required
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label
+                    class="block text-sm font-medium mb-2 text-tidal-gray-300"
+                    >Tags (comma separated)</label
+                  >
+                  <input
+                    type="text"
+                    value=${tags}
+                    onInput=${e => setTags(e.target.value)}
+                    class="w-full px-3 py-2 bg-tidal-gray-800 border border-tidal-gray-700 rounded-md focus:ring-2 focus:ring-tidal-blue focus:border-transparent text-white placeholder-tidal-gray-400"
+                    placeholder="nature, landscape, mountains"
+                  />
+                </div>
+                <div class="flex space-x-3 pt-4">
+                  <button
+                    type="button"
+                    onClick=${onClose}
+                    class="flex-1 px-4 py-2 bg-tidal-gray-700 hover:bg-tidal-gray-600 text-white rounded-md transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    class="flex-1 px-4 py-2 bg-tidal-blue hover:bg-blue-600 text-white rounded-md transition-colors font-medium"
+                  >
+                    Add Image
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        `
+      }
+
+      // Main App Component
+      const App = () => {
+        const [images, setImages] = useState(galleryData.images)
+        const [favorites, setFavorites] = useState(new Set())
+        const [selectedImage, setSelectedImage] = useState(null)
+        const [searchTerm, setSearchTerm] = useState('')
+        const [selectedCategory, setSelectedCategory] = useState('All')
+        const [viewMode, setViewMode] = useState(appConfig.defaultViewMode)
+        const [showAddModal, setShowAddModal] = useState(false)
+        const [showFavoritesOnly, setShowFavoritesOnly] = useState(false)
+
+        // Debug selectedImage changes
+        useEffect(() => {
+          console.log('Selected image changed:', selectedImage)
+        }, [selectedImage])
+
+        // Get unique categories
+        const categories = ['All', ...availableCategories]
+
+        // Get external URI if present
+        const urlParams = new URLSearchParams(window.location.search)
+        const externalUri = urlParams.get('uri')
+
+        // Filter images
+        const filteredImages = images.filter(image => {
+          const matchesSearch =
+            image.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            image.description
+              .toLowerCase()
+              .includes(searchTerm.toLowerCase()) ||
+            image.photographer
+              .toLowerCase()
+              .includes(searchTerm.toLowerCase()) ||
+            image.tags.some(tag =>
+              tag.toLowerCase().includes(searchTerm.toLowerCase())
+            )
+
+          const matchesCategory =
+            selectedCategory === 'All' || image.category === selectedCategory
+          const matchesFavorites = !showFavoritesOnly || favorites.has(image.id)
+
+          return matchesSearch && matchesCategory && matchesFavorites
+        })
+
+        const toggleFavorite = imageId => {
+          const newFavorites = new Set(favorites)
+          if (newFavorites.has(imageId)) {
+            newFavorites.delete(imageId)
+          } else {
+            newFavorites.add(imageId)
+          }
+          setFavorites(newFavorites)
+        }
+
+        const addNewImage = image => {
+          setImages([image, ...images])
+        }
+
+        const handleImageSelect = image => {
+          console.log('handleImageSelect called with:', image)
+          setSelectedImage(image)
+        }
+
+        return html`
+          <div class="min-h-screen">
+            <!-- Header -->
+            <header
+              class="border-b border-tidal-gray-800 bg-tidal-black/95 backdrop-blur-sm sticky top-0 z-40"
+            >
+              <div class="max-w-7xl mx-auto px-6 py-4">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center space-x-8">
+                    <h1 class="text-2xl font-bold text-white">Gallery</h1>
+                    ${externalUri
+                      ? html`
+                          <div class="flex items-center space-x-2">
+                            <span
+                              class="px-2 py-1 bg-tidal-blue/20 text-tidal-blue text-xs rounded-full border border-tidal-blue/30"
+                            >
+                              External M3U
+                            </span>
+                            <span
+                              class="text-xs text-tidal-gray-400 max-w-xs truncate"
+                              title=${externalUri}
+                            >
+                              ${externalUri}
+                            </span>
+                          </div>
+                        `
+                      : ''}
+                    <nav class="hidden md:flex space-x-6">
+                      <a href="#" class="text-white font-medium">Explore</a>
+                      <a
+                        href="#"
+                        class="text-tidal-gray-400 hover:text-white transition-colors"
+                        >Collections</a
+                      >
+                      <a
+                        href="#"
+                        class="text-tidal-gray-400 hover:text-white transition-colors"
+                        >Trending</a
+                      >
+                    </nav>
+                  </div>
+                  <div class="flex items-center space-x-4">
+                    <div class="relative">
+                      <input
+                        type="text"
+                        placeholder="Search images..."
+                        value=${searchTerm}
+                        onInput=${e => setSearchTerm(e.target.value)}
+                        class="w-64 pl-10 pr-4 py-2 bg-tidal-gray-800 border border-tidal-gray-700 rounded-full focus:ring-2 focus:ring-tidal-blue focus:border-transparent text-white placeholder-tidal-gray-400"
+                      />
+                      <div
+                        class="absolute left-3 top-1/2 transform -translate-y-1/2 text-tidal-gray-400"
+                      >
+                        <${SearchIcon} />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </header>
+
+            <div class="max-w-7xl mx-auto px-6 py-8">
+              <!-- Controls -->
+              <div class="flex items-center justify-between mb-8">
+                <div>
+                  <h2 class="text-3xl font-bold text-white mb-2">My Gallery</h2>
+                  <p class="text-tidal-gray-400">
+                    ${filteredImages.length}
+                    image${filteredImages.length !== 1 ? 's' : ''}
+                    ${showFavoritesOnly ? ' in favorites' : ''}
+                  </p>
+                </div>
+
+                <div class="flex items-center space-x-4">
+                  <button
+                    onClick=${() => setShowFavoritesOnly(!showFavoritesOnly)}
+                    class="flex items-center space-x-2 px-4 py-2 ${showFavoritesOnly
+                      ? 'bg-red-500 hover:bg-red-600'
+                      : 'bg-tidal-gray-800 hover:bg-tidal-gray-700'} text-white rounded-md transition-colors"
+                  >
+                    <${HeartIcon} filled=${showFavoritesOnly} />
+                    <span>Favorites</span>
+                  </button>
+
+                  <select
+                    value=${selectedCategory}
+                    onChange=${e => setSelectedCategory(e.target.value)}
+                    class="px-4 py-2 bg-tidal-gray-800 border border-tidal-gray-700 rounded-md text-white focus:ring-2 focus:ring-tidal-blue focus:border-transparent"
+                  >
+                    ${categories.map(
+                      category =>
+                        html`<option value=${category}>${category}</option>`
+                    )}
+                  </select>
+
+                  <div class="flex bg-tidal-gray-800 rounded-md p-1">
+                    <button
+                      onClick=${() => setViewMode('grid')}
+                      class="p-2 rounded ${viewMode === 'grid'
+                        ? 'bg-tidal-blue text-white'
+                        : 'text-tidal-gray-400 hover:text-white'} transition-colors"
+                    >
+                      <${GridIcon} />
+                    </button>
+                    <button
+                      onClick=${() => setViewMode('list')}
+                      class="p-2 rounded ${viewMode === 'list'
+                        ? 'bg-tidal-blue text-white'
+                        : 'text-tidal-gray-400 hover:text-white'} transition-colors"
+                    >
+                      <${ListIcon} />
+                    </button>
+                  </div>
+
+                  <button
+                    onClick=${() => setShowAddModal(true)}
+                    class="flex items-center space-x-2 px-4 py-2 bg-tidal-blue hover:bg-blue-600 text-white rounded-md transition-colors font-medium"
+                  >
+                    <${PlusIcon} />
+                    <span>Add Image</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Images Grid/List -->
+              ${filteredImages.length === 0
+                ? html`
+                    <div class="text-center py-16 text-tidal-gray-400">
+                      <div
+                        class="w-24 h-24 image-placeholder rounded-lg mx-auto mb-4 flex items-center justify-center"
+                      >
+                        <span class="text-3xl">📷</span>
+                      </div>
+                      <p class="text-lg mb-2">No images found</p>
+                      <p class="text-sm">
+                        Try adjusting your search or filters
+                      </p>
+                    </div>
+                  `
+                : viewMode === 'grid'
+                ? html`
+                    <div class="grid-masonry">
+                      ${filteredImages.map(
+                        image => html`
+                          <${ImageCard}
+                            key=${image.id}
+                            image=${image}
+                            onClick=${handleImageSelect}
+                            onToggleFavorite=${toggleFavorite}
+                            isFavorite=${favorites.has(image.id)}
+                            viewMode=${viewMode}
+                          />
+                        `
+                      )}
+                    </div>
+                  `
+                : html`
+                    <div class="space-y-2">
+                      ${filteredImages.map(
+                        image => html`
+                          <${ImageCard}
+                            key=${image.id}
+                            image=${image}
+                            onClick=${handleImageSelect}
+                            onToggleFavorite=${toggleFavorite}
+                            isFavorite=${favorites.has(image.id)}
+                            viewMode=${viewMode}
+                          />
+                        `
+                      )}
+                    </div>
+                  `}
+            </div>
+
+            <!-- Image Modal -->
+            <${ImageModal}
+              image=${selectedImage}
+              isOpen=${!!selectedImage}
+              onClose=${() => setSelectedImage(null)}
+              onToggleFavorite=${toggleFavorite}
+              isFavorite=${selectedImage && favorites.has(selectedImage.id)}
+            />
+
+            <!-- Add Image Modal -->
+            <${AddImageModal}
+              isOpen=${showAddModal}
+              onClose=${() => setShowAddModal(false)}
+              onAdd=${addNewImage}
+            />
+          </div>
+        `
+      }
+
+      // Render initial loading state
+      const urlParams = new URLSearchParams(window.location.search)
+      const externalUri = urlParams.get('uri')
+
+      render(
+        html`
+          <div class="min-h-screen flex items-center justify-center">
+            <div class="text-center">
+              <div
+                class="w-16 h-16 border-4 border-tidal-blue border-t-transparent rounded-full animate-spin mx-auto mb-4"
+              ></div>
+              <p class="text-tidal-gray-400 mb-2">
+                ${externalUri
+                  ? 'Loading external M3U gallery...'
+                  : 'Loading gallery...'}
+              </p>
+              ${externalUri
+                ? html`
+                    <p
+                      class="text-xs text-tidal-gray-500 max-w-md mx-auto truncate"
+                      title=${externalUri}
+                    >
+                      From: ${externalUri}
+                    </p>
+                  `
+                : ''}
+            </div>
+          </div>
+        `,
+        document.getElementById('app')
+      )
+    </script>
+  </body>
+</html>
